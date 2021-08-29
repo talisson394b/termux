@@ -44,22 +44,21 @@ function SetWallpaper() {
 
 function Wiftimer() {
     pkill --full "sleep"
-    local minute="70"
- 
+
+    local minute=1 conn_state=""
 
     if [[ $minute -gt 0 && $minute -lt 120 ]]; then
 	_SendMsg "#16a085" "Wiftimer: ${minute} min."
 	{
 	    sleep ${minute}m
 	   
-            conn_state="$(termux-wifi-connectioninfo | \ 
-                grep "supplicant_state" | \
-	        cut -f2 -d: )"
+	    conn_state="$(termux-wifi-connectioninfo | \
+           		grep  "supplicant_state" | \
+            		cut -f2 -d: )"
 
-	    if [[ $conn_state =~ '"COMPLETED"' ]]; then
-                _SendMsg "#e74c3c" "Desconectando"
-	    fi
-    
+    	    if [[ $conn_state =~ '"COMPLETED"' ]]; then
+               _SendMsg "#c0392b" "Desconectando"
+            fi
         } && termux-wifi-enable "false" &
     fi
 }
@@ -124,4 +123,11 @@ function Main() {
 
 
 Main $@
+conn_state="$(termux-wifi-connectioninfo | \
+            grep  "supplicant_state" | \
+            cut -f2 -d: )"
+    echo "Status:$conn_state"
 
+    if [[ $conn_state =~ '"COMPLETED"' ]]; then
+        echo "O wifi será desligado em $1 Minutos"
+    fi
