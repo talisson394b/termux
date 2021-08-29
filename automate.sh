@@ -67,12 +67,12 @@ function Wiftimer() {
 
 function Whatstatus() {
     local origin="/sdcard/WhatsApp/Media/.Statuses"
-    local backup=$(_CreatDir "/sdcard/WhatStatus")
+    local backup=$(_CreateDir "/sdcard/WhatStatus")
     local count=0
     
     if [[ $(wc -l <<< $(ls $origin)) -gt 1 ]]; then
 	for file in "$origin"/*; do
-	    if ! [[ -e "$Backup/$(basename $file)" ]]; then
+	    if ! [[ -e "$backup/$(basename $file)" ]]; then
                 cp "$file" "$backup/"
 		((count++))
 	    fi
@@ -124,3 +124,4 @@ function Main() {
 
 
 Main $@
+
