@@ -1,5 +1,16 @@
 #! /usr/bin/env bash
 
+function _Help() {
+    cat <<EOF
+automatize [-h] <functions[option]>
+functions:
+    organize		Separa arquivos por tipo.
+    whatstatus		Copia midias da pasta .Status.
+    wiftimer <minutos>	Desativa o wifi.
+    wallpaper		Plano de fundo aleátorio
+EOF
+}
+
 
 function _SendMsg() {
     local background="$1" msg="$2"
@@ -31,13 +42,13 @@ function _Random() {
 
 
 function SetWallpaper() {
-    local GALLERY=$(_CreatDir "/sdcard/Pictures/Wall")
+    local GALLERY=$(_CreateDir "/sdcard/Pictures/Wall")
     [[ $(ls $GALLERY) =~ .*[.](png|jpg) ]]
     local pictures=(${BASH_REMATCH[@]})
     local pos=$(_Random 0 ${#pictures[@]})
     
     if [[ ${#pictures[@]} -ne 0 ]]; then
-        termux-set-wallpaper "$GALLERY/${pictures[$pos]}"
+        termux-wallpaper -f "$GALLERY/${pictures[$pos]}"
     fi
 }
 
@@ -45,7 +56,7 @@ function SetWallpaper() {
 function Wiftimer() {
     pkill --full "sleep"
 
-    local minute=1 conn_state=""
+    local minute=$1 conn_state=""
 
     if [[ $minute -gt 0 && $minute -lt 120 ]]; then
 	_SendMsg "#16a085" "Wiftimer: ${minute} min."
@@ -105,29 +116,26 @@ EOF
 
 
 function Main() {
-    for arg in "$@"; do
+    local arguments=($@) count=1
+    for arg in ${arguments[@]}; do
         case $arg in
 	    *"organize")
                  Organize;;
 	    *"whatstatus")
 	         Whatstatus;;
 	    *"wiftimer")
-		 Wiftimer;;
-	    *"walppaper")
+		 Wiftimer ${arguments[$count]} 2> /dev/null;;
+	    *"wallpaper")
 		 SetWallpaper;;
+	    "-h")
+		 _Help;;
 	    *)
 		continue;;
 	 esac
+	 ((count++))
     done	 
 }
 
 
 Main $@
-conn_state="$(termux-wifi-connectioninfo | \
-            grep  "supplicant_state" | \
-            cut -f2 -d: )"
-    echo "Status:$conn_state"
 
-    if [[ $conn_state =~ '"COMPLETED"' ]]; then
-        echo "O wifi será desligado em $1 Minutos"
-    fi
