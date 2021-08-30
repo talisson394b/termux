@@ -7,7 +7,7 @@ functions:
     organize		Separa arquivos por tipo.
     whatstatus		Copia midias da pasta .Status.
     wiftimer <minutos>	Desativa o wifi.
-    wallpaper		Plano de fundo aleátorio
+    wallpaper		Plano de fundo aleatório
 EOF
 }
 
@@ -42,13 +42,13 @@ function _Random() {
 
 
 function SetWallpaper() {
-    local GALLERY=$(_CreateDir "/sdcard/Pictures/Wall")
-    [[ $(ls $GALLERY) =~ .*[.](png|jpg) ]]
+    local gallery=$(_CreateDir "/sdcard/Pictures/Wall")
+    [[ $(ls $gallery) =~ .*[.](png|jpg) ]]
     local pictures=(${BASH_REMATCH[@]})
     local pos=$(_Random 0 ${#pictures[@]})
     
     if [[ ${#pictures[@]} -ne 0 ]]; then
-        termux-wallpaper -f "$GALLERY/${pictures[$pos]}"
+        termux-wallpaper -f "$gallery/${pictures[$pos]}"
     fi
 }
 
