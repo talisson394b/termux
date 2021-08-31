@@ -15,9 +15,11 @@ EOF
 
 
 function _SendMsg() {
-    local background="$1" msg="$2"
-
-    termux-toast -b "$background" "$msg"
+    local quiet_mode="false"
+    if [[ $quiet_mode =~ "false" ]]; then
+        local background="$1" msg="$2"
+        termux-toast -b "$background" "$msg"
+    fi
 }
 
 
@@ -98,10 +100,11 @@ function Whatstatus() {
 function Organize() {
      local root="/sdcard/Download/"
      local types=$(cat <<EOF
-Pictures /sdcard/Pictures/ '.png' '.jpg' '.gif'
+Pictures /sdcard/Pictures/ '.png' '.jpg' '.gif' '.webp'
 Audio /sdcard/Music/ '.mp3' '.m4a' '.wma'
 Video /sdcard/Movies/ '.mp4' '.mkv'
 Document /sdcard/Documents/ '.pdf' '.html'
+Trash /sdcard/Void.d/ '.apk'
 EOF
 )    
      for file in "$root"/*; do
@@ -110,7 +113,7 @@ EOF
 
 	if [[ ${#search[@]} -gt 0 ]]; then
 	    local target_dir=${search[1]}
-	    mv "$file" "$target_dir"
+	    mv -f "$file" "$target_dir"
 	fi
      done
      _SendMsg "#16a085" "Organize: OK"
@@ -130,9 +133,10 @@ function VolumeCtrl() {
 	    ;;
     esac
 
-    local count=
+    local count=0
     for stream in ${streams[@]}; do
 	termux-volume $stream ${volume[$count]}
+	((count++))
     done
     unset streams
     unset volume
