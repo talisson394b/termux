@@ -4,6 +4,8 @@ function _Help() {
     cat <<EOF
 automatize [-h] <functions[option]>
 functions:
+    volume <perfil>
+        perfil: silent | pattern
     organize		Separa arquivos por tipo.
     whatstatus		Copia midias da pasta .Status.
     wiftimer <minutos>	Desativa o wifi.
@@ -115,17 +117,42 @@ EOF
 }
 
 
+function VolumeCtrl() {
+    streams=("call" "system" "ring" "music" "alarm" "notification")
+    volume=()
+
+    case $1 in
+	"silent")	
+	    volume=(0 0 0 0 0 0)
+	    ;;
+	"pattern")
+	    volume=(3 4 4 5 4 4)
+	    ;;
+    esac
+
+    local count=
+    for stream in ${streams[@]}; do
+	termux-volume $stream ${volume[$count]}
+    done
+    unset streams
+    unset volume
+}
+
+
+
 function Main() {
     local arguments=($@) count=1
     for arg in ${arguments[@]}; do
         case $arg in
-	    *"organize")
+	    "volume")
+		VolumeCtrl ${arguments[$count]} 2> /dev/null;; 
+	    "organize")
                  Organize;;
-	    *"whatstatus")
+	    "whatstatus")
 	         Whatstatus;;
-	    *"wiftimer")
+	    "wiftimer")
 		 Wiftimer ${arguments[$count]} 2> /dev/null;;
-	    *"wallpaper")
+	    "wallpaper")
 		 SetWallpaper;;
 	    "-h")
 		 _Help;;
