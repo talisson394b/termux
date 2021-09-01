@@ -37,22 +37,13 @@ function _CreateDir() {
 }
 
 
-function _Random() {
-    local a=${1} b=${2}
-    if [[ $a -lt $b ]]; then
-	shuf -i  $a-$b -n 1
-    fi
-}
-
-
 function SetWallpaper() {
     local gallery=$(_CreateDir "/sdcard/Pictures/Wall")
-    [[ $(ls $gallery) =~ .*[.](png|jpg) ]]
-    local pictures=(${BASH_REMATCH[@]})
-    local pos=$(_Random 0 ${#pictures[@]})
+    local pictures=($(ls "$gallery/"*jpg))
+    local random=$(shuf -i 0-${#pictures[@]} -n 1)
     
     if [[ ${#pictures[@]} -ne 0 ]]; then
-        termux-wallpaper -f "$gallery/${pictures[$pos]}"
+        termux-wallpaper -f "${pictures[$random]}"
     fi
 }
 
