@@ -98,10 +98,9 @@ Document /sdcard/Documents/ '.pdf' '.html'
 Trash /sdcard/Void.d/ '.apk'
 EOF
 )    
-     for file in "$root"/*; do
+     for file in "$root"*; do
 	local ext=$(cut -f2 -d. <<< $(basename $file))
-	local search=($(grep -E "[.]$ext" <<< $types))
-
+	local search=($(grep "$ext" <<< $types))
 	if [[ ${#search[@]} -gt 0 ]]; then
 	    local target_dir=${search[1]}
 	    mv -f "$file" "$target_dir"
